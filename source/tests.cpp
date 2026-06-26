@@ -4,6 +4,7 @@
 #include "box.hpp"
 #include "doctest.h"
 #include <glm/glm.hpp>
+#include <sstream>
 
 #include "glm/ext/scalar_constants.hpp"
 
@@ -32,6 +33,17 @@ TEST_CASE("Box area and volume")
 
   CHECK(b.area() == doctest::Approx(2.0f * (2.0f*3.0f + 3.0f*4.0f + 4.0f*2.0f)));
   CHECK(b.volume() == doctest::Approx(24.0f));
+}
+
+TEST_CASE("Shape print via operator<<")
+{
+  Color red{1.0f, 0.0f, 0.0f};
+  Sphere s{glm::vec3{0.0f, 0.0f, 0.0f}, 1.0f, red, "test_sphere"};
+
+  std::ostringstream oss;
+  oss << s;
+
+  CHECK(oss.str().find("test_sphere") != std::string::npos);
 }
 
 int main(int argc, char *argv[])
