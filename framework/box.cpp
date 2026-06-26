@@ -1,0 +1,19 @@
+#include "box.hpp"
+
+Box::Box(glm::vec3 const& min, glm::vec3 const& max)
+    : min_{min}
+, max_{max}
+{
+}
+
+float Box::area() const
+{
+    glm::vec3 size = max_ - min_;
+    return 2.0f * (size.x * size.y + size.y * size.z + size.z * size.x);
+}
+
+float Box::volume() const
+{
+    glm::vec3 size = max_ - min_;
+    return size.x * size.y * size.z;
+}
