@@ -1,8 +1,9 @@
 #include "sphere.hpp"
 #include <glm/gtc/constants.hpp>
 
-Sphere::Sphere(glm::vec3 const& center, float radius)
-    : center_{center}
+Sphere::Sphere(glm::vec3 const& center, float radius, Color const& color, std::string const& name)
+    : Shape{name, color}
+, center_{center}
 , radius_{radius}
 {
 }
