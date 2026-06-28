@@ -1,0 +1,28 @@
+test with virtual
+
+Shape::Shape() - constructing "sphere0"
+Sphere::Sphere() - constructing "sphere0"
+Shape::Shape() - constructing "sphere1"
+Sphere::Sphere() - constructing "sphere1"
+Shape "sphere0", color: (1,0,0)
+, Sphere: center = (0, 0, 0), radius = 1.2
+Shape "sphere1", color: (1,0,0)
+, Sphere: center = (0, 0, 0), radius = 1.2
+Sphere::~Sphere() - destructing "sphere0"
+Shape::~Shape() - destructing "sphere0"
+Sphere::~Sphere() - destructing "sphere1"
+Shape::~Shape() - destructing "sphere1"
+
+test without virtual
+
+Shape::Shape() - constructing "sphere0"
+Sphere::Sphere() - constructing "sphere0"
+Shape::Shape() - constructing "sphere1"
+Sphere::Sphere() - constructing "sphere1"
+Shape "sphere0", color: (1,0,0)
+, Sphere: center = (0, 0, 0), radius = 1.2
+Shape "sphere1", color: (1,0,0)
+, Sphere: center = (0, 0, 0), radius = 1.2
+Sphere::~Sphere() - destructing "sphere0"
+Shape::~Shape() - destructing "sphere0"
+Shape::~Shape() - destructing "sphere1"

@@ -1,10 +1,17 @@
 #include "box.hpp"
+#include <iostream>
 
 Box::Box(glm::vec3 const& min, glm::vec3 const& max, Color const& color, std::string const& name)
     : Shape{name, color}
 , min_{min}
 , max_{max}
 {
+    std::cout << "Box::Box() - constructing \"" << name_ << "\"\n";
+}
+
+Box::~Box()
+{
+    std::cout << "Box::~Box() - destructing \"" << name_ << "\"\n";
 }
 
 float Box::area() const

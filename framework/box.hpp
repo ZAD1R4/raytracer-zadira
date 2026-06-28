@@ -7,19 +7,13 @@ class Box : public Shape
 {
 public:
     Box(glm::vec3 const& min, glm::vec3 const& max, Color const& color, std::string const& name);
+    ~Box() override;
 
     float area() const override;
     float volume() const override;
 
     std::ostream& print(std::ostream& os) const override;
 
-    // override forces the compiler to statically verify that the
-    // method actually overrides the existing virtual method of the base class.
-    // Without override, a typo in the signature (parameter types, const, name)
-    // does not lead to a compilation error, but to the silent creation of a new method
-    // unrelated to the base class, which violates the expected polymorphism
-    // without any warning at the compilation stage.
-    
 private:
     glm::vec3 min_;
     glm::vec3 max_;

@@ -166,6 +166,22 @@ TEST_CASE("Static vs dynamic type example")
     CHECK(oss2.str().find("Sphere") != std::string::npos);
 }
 
+TEST_CASE("Virtual destructor - construction and destruction order")
+{
+    Color red{1.0f, 0.0f, 0.0f};
+    glm::vec3 position{0.0f, 0.0f, 0.0f};
+
+    Sphere* s1 = new Sphere{position, 1.2f, red, "sphere0"};
+    Shape* s2 = new Sphere{position, 1.2f, red, "sphere1"};
+
+    s1->print(std::cout);
+    std::cout << "\n";
+    s2->print(std::cout);
+    std::cout << "\n";
+
+    delete s1;
+    delete s2;
+}
 
 int main(int argc, char *argv[]) {
     doctest::Context ctx;
