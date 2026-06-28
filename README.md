@@ -17,3 +17,24 @@ The framework provides an OpenGL-based rendering window (via GLFW and NanoVG), m
     // does not lead to a compilation error, but to the silent creation of a new method
     // unrelated to the base class, which violates the expected polymorphism
     // without any warning at the compilation stage.
+
+Aufgabe 6.7
+
+Statischer Typ:
+
+Der statische Typ einer Variable ist der Typ, der bei ihrer Deklaration im Quellcode angegeben wird.
+Er ist dem Compiler bereits zur Compile-Zeit bekannt und ändert sich während der Laufzeit des Programms nicht.
+
+Dynamischer Typ:
+
+Der dynamische Typ einer Variable ist der tatsächliche Typ des Objekts, auf das die Variable zur Laufzeit verweist.
+Er wird erst zur Laufzeit bestimmt, abhängig davon, welches konkrete Objekt tatsächlich erzeugt wurde (z. B. über new oder make_shared).
+
+Wann wird welcher Typ überprüft:
+
+Der statische Typ wird zur Compile-Zeit überprüft. 
+Der Compiler entscheidet anhand des statischen Typs, welche Methoden und Member über eine Variable überhaupt 
+aufgerufen werden dürfen.
+
+Der dynamische Typ wird zur Laufzeit ausgewertet. Er entscheidet bei virtuellen Methoden, welche konkrete (überschriebene) Implementierung tatsächlich ausgeführt wird.
+

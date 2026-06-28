@@ -9,6 +9,7 @@
 #include "ray.hpp"
 #include "hitpoint.hpp"
 #include <glm/gtx/intersect.hpp>
+#include <memory>
 
 #include "glm/ext/scalar_constants.hpp"
 
@@ -146,6 +147,25 @@ TEST_CASE("Sphere intersect: sphere is behind the ray")
 
     CHECK(hp.hit == false);
 }
+TEST_CASE("Static vs dynamic type example")
+{
+    Color red{1.0f, 0.0f, 0.0f};
+    glm::vec3 position{0.0f, 0.0f, 0.0f};
+
+    std::shared_ptr<Sphere> s1 =
+        std::make_shared<Sphere>(position, 1.2f, red, "sphere0");
+
+    std::shared_ptr<Shape> s2 =
+        std::make_shared<Sphere>(position, 1.2f, red, "sphere1");
+
+    std::ostringstream oss1, oss2;
+    s1->print(oss1);
+    s2->print(oss2);
+
+    CHECK(oss1.str().find("Sphere") != std::string::npos);
+    CHECK(oss2.str().find("Sphere") != std::string::npos);
+}
+
 
 int main(int argc, char *argv[]) {
     doctest::Context ctx;
