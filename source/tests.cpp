@@ -1,10 +1,14 @@
 #define DOCTEST_CONFIG_IMPLEMENT
+#define GLM_ENABLE_EXPERIMENTAL
 
 #include "sphere.hpp"
 #include "box.hpp"
 #include "doctest.h"
 #include <glm/glm.hpp>
 #include <sstream>
+#include "ray.hpp"
+#include "hitpoint.hpp"
+#include <glm/gtx/intersect.hpp>
 
 #include "glm/ext/scalar_constants.hpp"
 
@@ -62,6 +66,85 @@ TEST_CASE("Polymorphic print via base pointer") {
     CHECK(oss.str().find("Sphere") != std::string::npos);
 
     delete shape_ptr;
+}
+
+TEST_CASE("intersect_ray_sphere")
+{
+    glm::vec3 ray_origin{0.0f, 0.0f, 0.0f};
+    glm::vec3 ray_direction{0.0f, 0.0f, 1.0f};
+
+    glm::vec3 sphere_center{0.0f, 0.0f, 5.0f};
+    float sphere_radius{1.0f};
+    float distance = 0.0f;
+
+    auto result = glm::intersectRaySphere(
+        ray_origin, ray_direction,
+        sphere_center,
+        sphere_radius * sphere_radius,
+        distance);
+
+    REQUIRE(distance == doctest::Approx(4.0f));
+}
+
+TEST_CASE("Sphere intersect: ray hits sphere head-on")
+{
+    Color red{1.0f, 0.0f, 0.0f};
+    Sphere s{glm::vec3{0.0f, 0.0f, 5.0f}, 1.0f, red, "test_sphere"};
+
+    Ray ray{glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 0.0f, 1.0f}};
+    HitPoint hp = s.intersect(ray);
+
+    CHECK(hp.hit == true);
+    CHECK(hp.distance == doctest::Approx(4.0f));
+    CHECK(hp.name == "test_sphere");
+    CHECK(hp.intersection_point.x == doctest::Approx(0.0f));
+    CHECK(hp.intersection_point.y == doctest::Approx(0.0f));
+    CHECK(hp.intersection_point.z == doctest::Approx(4.0f));
+}
+
+TEST_CASE("Sphere intersect: ray misses sphere")
+{
+    Color blue{0.0f, 0.0f, 1.0f};
+    Sphere s{glm::vec3{10.0f, 10.0f, 10.0f}, 1.0f, blue, "far_sphere"};
+
+    Ray ray{glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 0.0f, 1.0f}};
+    HitPoint hp = s.intersect(ray);
+
+    CHECK(hp.hit == false);
+}
+
+TEST_CASE("Sphere intersect: ray origin inside sphere")
+{
+    Color green{0.0f, 1.0f, 0.0f};
+    Sphere s{glm::vec3{0.0f, 0.0f, 0.0f}, 5.0f, green, "big_sphere"};
+
+    Ray ray{glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{1.0f, 0.0f, 0.0f}};
+    HitPoint hp = s.intersect(ray);
+
+    CHECK(hp.hit == true);
+    CHECK(hp.distance == doctest::Approx(5.0f));
+}
+
+TEST_CASE("Sphere intersect: ray tangent to sphere")
+{
+    Color white{1.0f, 1.0f, 1.0f};
+    Sphere s{glm::vec3{0.0f, 1.0f, 5.0f}, 1.0f, white, "tangent_sphere"};
+
+    Ray ray{glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 0.0f, 1.0f}};
+    HitPoint hp = s.intersect(ray);
+
+    MESSAGE("Tangent ray hit status: ", hp.hit);
+}
+
+TEST_CASE("Sphere intersect: sphere is behind the ray")
+{
+    Color yellow{1.0f, 1.0f, 0.0f};
+    Sphere s{glm::vec3{0.0f, 0.0f, -5.0f}, 1.0f, yellow, "behind_sphere"};
+
+    Ray ray{glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 0.0f, 1.0f}};
+    HitPoint hp = s.intersect(ray);
+
+    CHECK(hp.hit == false);
 }
 
 int main(int argc, char *argv[]) {
