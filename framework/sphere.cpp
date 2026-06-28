@@ -17,3 +17,11 @@ float Sphere::volume() const
 {
     return (4.0f / 3.0f) * glm::pi<float>() * radius_ * radius_ * radius_;
 }
+
+std::ostream& Sphere::print(std::ostream& os) const
+{
+    Shape::print(os);
+    os << ", Sphere: center = (" << center_.x << ", " << center_.y << ", " << center_.z << ")"
+       << ", radius = " << radius_;
+    return os;
+}
