@@ -4,9 +4,13 @@
 #include "sphere.hpp"
 #include "box.hpp"
 #include "material.hpp"
+#include "scene.hpp"
+#include "sdf_loader.hpp"
 #include "doctest.h"
 #include <glm/glm.hpp>
 #include <sstream>
+#include <fstream>
+#include <cstdio>
 #include "ray.hpp"
 #include "hitpoint.hpp"
 #include <glm/gtx/intersect.hpp>
@@ -233,8 +237,75 @@ TEST_CASE("Two shapes can share the same Material instance")
 
     Sphere s{glm::vec3{0.0f, 0.0f, 0.0f}, 1.0f, shared, "sphere_a"};
     Box b{glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{1.0f, 1.0f, 1.0f}, shared, "box_a"};
-    
+
     CHECK(shared.use_count() == 3);
+}
+
+TEST_CASE("load_sdf: parses the example material definitions from the task sheet")
+{
+    std::string const tmp_path = "test_materials.sdf";
+    {
+        std::ofstream out(tmp_path);
+        out << "define material red 1 0 0 1 0 0 1 0 0 20\n";
+        out << "define material green 0 1 0 0 1 0 0 1 0 50\n";
+        out << "define material blue 0 0 1 0 0 1 0 0 1 10\n";
+    }
+
+    Scene scene;
+    load_sdf(tmp_path, scene);
+
+    CHECK(scene.materials.size() == 3);
+    REQUIRE(scene.materials.count("red") == 1);
+    REQUIRE(scene.materials.count("green") == 1);
+    REQUIRE(scene.materials.count("blue") == 1);
+
+    auto const& red = scene.materials["red"];
+    CHECK(red->ka.r == doctest::Approx(1.0f));
+    CHECK(red->ka.g == doctest::Approx(0.0f));
+    CHECK(red->kd.r == doctest::Approx(1.0f));
+    CHECK(red->ks.r == doctest::Approx(1.0f));
+    CHECK(red->m == doctest::Approx(20.0f));
+
+    auto const& green = scene.materials["green"];
+    CHECK(green->kd.g == doctest::Approx(1.0f));
+    CHECK(green->m == doctest::Approx(50.0f));
+
+    auto const& blue = scene.materials["blue"];
+    CHECK(blue->ks.b == doctest::Approx(1.0f));
+    CHECK(blue->m == doctest::Approx(10.0f));
+
+    std::remove(tmp_path.c_str());
+}
+
+TEST_CASE("load_sdf: materials can be shared by shapes afterwards")
+{
+    std::string const tmp_path = "test_materials2.sdf";
+    {
+        std::ofstream out(tmp_path);
+        out << "# Kommentarzeile sollte ignoriert werden\n";
+        out << "define material red 1 0 0 1 0 0 1 0 0 20\n";
+    }
+
+    Scene scene;
+    load_sdf(tmp_path, scene);
+
+    REQUIRE(scene.materials.count("red") == 1);
+    auto red = scene.materials["red"];
+
+    scene.shapes.push_back(std::make_shared<Sphere>(glm::vec3{0,0,0}, 1.0f, red, "s1"));
+    scene.shapes.push_back(std::make_shared<Box>(glm::vec3{0,0,0}, glm::vec3{1,1,1}, red, "b1"));
+
+    CHECK(red.use_count() == 4);
+
+    std::remove(tmp_path.c_str());
+}
+
+TEST_CASE("load_sdf: missing file does not crash and leaves the scene empty")
+{
+    Scene scene;
+    load_sdf("this_file_does_not_exist.sdf", scene);
+
+    CHECK(scene.materials.empty());
 }
 
 TEST_CASE("Static vs dynamic type example")
