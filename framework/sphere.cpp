@@ -40,9 +40,8 @@ HitPoint Sphere::intersect(Ray const& ray) const
     HitPoint result;
 
     float distance = 0.0f;
-    glm::vec3 direction = glm::normalize(ray.direction);
     bool did_hit = glm::intersectRaySphere(
-        ray.origin, direction,
+        ray.origin, ray.direction,
         center_,
         radius_ * radius_,
         distance);
@@ -54,7 +53,7 @@ HitPoint Sphere::intersect(Ray const& ray) const
         result.name = name_;
         result.color = color_;
         result.intersection_point = ray.origin + distance * ray.direction;
-        result.direction = direction;
+        result.direction = ray.direction;
     }
 
     return result;

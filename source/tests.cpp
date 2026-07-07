@@ -147,6 +147,69 @@ TEST_CASE("Sphere intersect: sphere is behind the ray")
 
     CHECK(hp.hit == false);
 }
+
+// Aufgabe 7.3: Box::intersect
+
+TEST_CASE("Box intersect: ray hits box head-on from outside")
+{
+    Color red{1.0f, 0.0f, 0.0f};
+    Box b{glm::vec3{-1.0f, -1.0f, -1.0f}, glm::vec3{1.0f, 1.0f, 1.0f}, red, "test_box"};
+
+    Ray ray{glm::vec3{0.0f, 0.0f, 5.0f}, glm::vec3{0.0f, 0.0f, -1.0f}};
+    HitPoint hp = b.intersect(ray);
+
+    CHECK(hp.hit == true);
+    CHECK(hp.distance == doctest::Approx(4.0f));
+    CHECK(hp.name == "test_box");
+    CHECK(hp.intersection_point.z == doctest::Approx(1.0f));
+}
+
+TEST_CASE("Box intersect: ray misses box")
+{
+    Color red{1.0f, 0.0f, 0.0f};
+    Box b{glm::vec3{-1.0f, -1.0f, -1.0f}, glm::vec3{1.0f, 1.0f, 1.0f}, red, "test_box"};
+
+    Ray ray{glm::vec3{10.0f, 10.0f, 5.0f}, glm::vec3{0.0f, 0.0f, -1.0f}};
+    HitPoint hp = b.intersect(ray);
+
+    CHECK(hp.hit == false);
+}
+
+TEST_CASE("Box intersect: ray origin inside the box")
+{
+    Color red{1.0f, 0.0f, 0.0f};
+    Box b{glm::vec3{-1.0f, -1.0f, -1.0f}, glm::vec3{1.0f, 1.0f, 1.0f}, red, "test_box"};
+
+    Ray ray{glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 0.0f, 1.0f}};
+    HitPoint hp = b.intersect(ray);
+
+    CHECK(hp.hit == true);
+    CHECK(hp.distance == doctest::Approx(1.0f));
+}
+
+TEST_CASE("Box intersect: box behind the ray")
+{
+    Color red{1.0f, 0.0f, 0.0f};
+    Box b{glm::vec3{-1.0f, -1.0f, -6.0f}, glm::vec3{1.0f, 1.0f, -4.0f}, red, "test_box"};
+
+    Ray ray{glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 0.0f, 1.0f}};
+    HitPoint hp = b.intersect(ray);
+
+    CHECK(hp.hit == false);
+}
+
+TEST_CASE("Box intersect: diagonal ray hits the box")
+{
+    Color red{1.0f, 0.0f, 0.0f};
+    Box b{glm::vec3{-1.0f, -1.0f, -1.0f}, glm::vec3{1.0f, 1.0f, 1.0f}, red, "test_box"};
+
+    glm::vec3 dir = glm::normalize(glm::vec3{1.0f, 1.0f, 1.0f});
+    Ray ray{glm::vec3{-5.0f, -5.0f, -5.0f}, dir};
+    HitPoint hp = b.intersect(ray);
+
+    CHECK(hp.hit == true);
+}
+
 TEST_CASE("Static vs dynamic type example")
 {
     Color red{1.0f, 0.0f, 0.0f};

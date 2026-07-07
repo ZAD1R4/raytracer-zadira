@@ -14,6 +14,8 @@ public:
 
     std::ostream& print(std::ostream& os) const override;
 
+    HitPoint intersect(Ray const& ray) const override;
+
 private:
     glm::vec3 min_;
     glm::vec3 max_;
