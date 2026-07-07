@@ -6,7 +6,7 @@
 class Box : public Shape
 {
 public:
-    Box(glm::vec3 const& min, glm::vec3 const& max, Color const& color, std::string const& name);
+    Box(glm::vec3 const& min, glm::vec3 const& max, std::shared_ptr<Material> const& material, std::string const& name);
     ~Box() override;
 
     float area() const override;

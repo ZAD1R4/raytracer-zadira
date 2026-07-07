@@ -1,8 +1,8 @@
 #include "shape.hpp"
 
-Shape::Shape(std::string const& name, Color const& color)
+Shape::Shape(std::string const& name, std::shared_ptr<Material> const& material)
     : name_{name}
-, color_{color}
+, material_{material}
 {
     std::cout << "Shape::Shape() - constructing \"" << name_ << "\"\n";
 }
@@ -14,7 +14,10 @@ Shape::~Shape()
 
 std::ostream& Shape::print(std::ostream& os) const
 {
-    os << "Shape \"" << name_ << "\", color: " << color_;
+    os << "Shape \"" << name_ << "\"";
+    if (material_) {
+        os << ", " << *material_;
+    }
     return os;
 }
 

@@ -3,8 +3,8 @@
 #include <glm/common.hpp>
 #include <iostream>
 
-Box::Box(glm::vec3 const& min, glm::vec3 const& max, Color const& color, std::string const& name)
-    : Shape{name, color}
+Box::Box(glm::vec3 const& min, glm::vec3 const& max, std::shared_ptr<Material> const& material, std::string const& name)
+    : Shape{name, material}
 , min_{min}
 , max_{max}
 {
@@ -36,7 +36,6 @@ std::ostream& Box::print(std::ostream& os) const
     return os;
 }
 
-
 HitPoint Box::intersect(Ray const& ray) const
 {
     HitPoint result;
@@ -62,7 +61,7 @@ HitPoint Box::intersect(Ray const& ray) const
     result.hit = true;
     result.distance = distance;
     result.name = name_;
-    result.color = color_;
+    result.color = material_ ? material_->kd : Color{0.0f, 0.0f, 0.0f};
     result.intersection_point = ray.origin + distance * ray.direction;
     result.direction = ray.direction;
 

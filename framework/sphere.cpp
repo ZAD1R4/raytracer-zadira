@@ -4,8 +4,8 @@
 #include <glm/gtx/intersect.hpp>
 #include <iostream>
 
-Sphere::Sphere(glm::vec3 const& center, float radius, Color const& color, std::string const& name)
-    : Shape{name, color}
+Sphere::Sphere(glm::vec3 const& center, float radius, std::shared_ptr<Material> const& material, std::string const& name)
+    : Shape{name, material}
 , center_{center}
 , radius_{radius}
 {
@@ -51,7 +51,7 @@ HitPoint Sphere::intersect(Ray const& ray) const
     if (did_hit) {
         result.distance = distance;
         result.name = name_;
-        result.color = color_;
+        result.color = material_ ? material_->kd : Color{0.0f, 0.0f, 0.0f};
         result.intersection_point = ray.origin + distance * ray.direction;
         result.direction = ray.direction;
     }
