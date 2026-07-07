@@ -41,7 +41,36 @@ void load_sdf(std::string const& filepath, Scene& scene)
                 continue;
             }
 
-            scene.materials[material->name] = material;
+            scene.materials[material->name] = material; //Pushen für std::map
+            scene.materials_vector.push_back(material); ///Pushen für std::vector
+            scene.materials_set.insert(material);       //Pushen für std::set
         }
     }
+}
+
+//Aufgabe 7.6
+//Definition "<" operators (Es wurde in scene.hpp als Global deklariert)
+bool operator<(std::shared_ptr<Material> const& lhs, std::shared_ptr<Material> const& rhs) {
+    return lhs->name < rhs->name;
+}
+
+//Suchfunktion Implementation
+std::shared_ptr<Material> find_material_in_vector(std::vector<std::shared_ptr<Material>> const& vec, std::string const& name) {
+    auto it = std::find_if(vec.begin(), vec.end(), [&name](auto const& mat) {
+        return mat->name == name;
+    });
+    return (it != vec.end()) ? *it : nullptr;
+}
+
+std::shared_ptr<Material> find_material_in_set(std::set<std::shared_ptr<Material>> const& set, std::string const& name) {
+    auto dummy_material = std::make_shared<Material>();
+    dummy_material->name = name;
+
+    auto it = set.find(dummy_material);
+    return (it != set.end()) ? *it : nullptr;
+}
+
+std::shared_ptr<Material> find_material_in_map(std::map<std::string, std::shared_ptr<Material>> const& map, std::string const& name) {
+    auto it = map.find(name);
+    return (it != map.end()) ? it->second : nullptr;
 }
