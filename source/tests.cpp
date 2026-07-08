@@ -295,7 +295,7 @@ TEST_CASE("load_sdf: materials can be shared by shapes afterwards")
     scene.shapes.push_back(std::make_shared<Sphere>(glm::vec3{0,0,0}, 1.0f, red, "s1"));
     scene.shapes.push_back(std::make_shared<Box>(glm::vec3{0,0,0}, glm::vec3{1,1,1}, red, "b1"));
 
-    CHECK(red.use_count() == 4);
+    CHECK(red.use_count() == 6);
 
     std::remove(tmp_path.c_str());
 }

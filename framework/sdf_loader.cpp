@@ -1,4 +1,6 @@
 #include "sdf_loader.hpp"
+
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <sstream>
