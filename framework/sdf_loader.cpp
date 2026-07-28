@@ -1,4 +1,6 @@
 #include "sdf_loader.hpp"
+#include "sphere.hpp"
+#include "box.hpp"
 
 #include <algorithm>
 #include <fstream>
@@ -19,16 +21,101 @@ void load_sdf(std::string const& filepath, Scene& scene)
         std::string keyword;
         iss >> keyword;
 
+        //kommentare und leere Zeilen überspringen
         if (keyword.empty() || keyword[0] == '#') {
             continue;
         }
 
-        if (keyword != "define") {
-            continue;
-        }
 
-        std::string object_class;
-        iss >> object_class;
+        //Definitionen
+        if (keyword == "define") {
+            std::string object_class;
+            iss >> object_class;
+
+            // für Material
+            if (object_class == "material") {
+                auto material = std::make_shared<Material>();
+                iss >> material->name
+                    >> material->ka.r >> material->ka.g >> material->ka.b
+                    >> material->kd.r >> material->kd.g >> material->kd.b
+                    >> material->ks.r >> material->ks.g >> material->ks.b
+                    >> material->m;
+
+                if (!iss) {
+                    std::cerr << "load_sdf: fehlerhafte material-Zeile: \"" << line << "\"\n";
+                    continue;
+                }
+
+                // Für den Raytracer (Map)
+                scene.materials[material->name] = material;
+                // Für frühere Tests
+                scene.materials_vector.push_back(material);
+                scene.materials_set.insert(material);
+            }
+            // für Shapes (Sphere & Box)
+            else if (object_class == "shape") {
+                std::string shape_type;
+                iss >> shape_type;
+
+                if (shape_type == "sphere") {
+                    std::string name, mat_name;
+                    glm::vec3 center;
+                    float radius;
+
+                    iss >> name >> center.x >> center.y >> center.z >> radius >> mat_name;
+
+                    auto mat_it = scene.materials.find(mat_name);
+                    std::shared_ptr<Material> mat = (mat_it != scene.materials.end()) ? mat_it->second : nullptr;
+
+                    if (iss) {
+                        scene.shapes.push_back(std::make_shared<Sphere>(center, radius, mat, name));
+                    }
+                }
+                else if (shape_type == "box") {
+                    std::string name, mat_name;
+                    glm::vec3 min, max;
+
+                    iss >> name >> min.x >> min.y >> min.z >> max.x >> max.y >> max.z >> mat_name;
+
+                    auto mat_it = scene.materials.find(mat_name);
+                    std::shared_ptr<Material> mat = (mat_it != scene.materials.end()) ? mat_it->second : nullptr;
+
+                    if (iss) {
+                        scene.shapes.push_back(std::make_shared<Box>(min, max, mat, name));
+                    }
+                }
+            }
+            // für Lichtquellen
+            else if (object_class == "light") {
+                Light light;
+                iss >> light.name
+                    >> light.pos.x >> light.pos.y >> light.pos.z
+                    >> light.color.r >> light.color.g >> light.color.b
+                    >> light.brightness;
+
+                if (iss) {
+                    scene.lights.push_back(light);
+                }
+            }
+        }
+        // für Ambientes Licht
+        else if (keyword == "ambient") {
+            iss >> scene.ambient.r >> scene.ambient.g >> scene.ambient.b;
+        }
+        // für Kamera
+        else if (keyword == "camera") {
+            iss >> scene.camera.name >> scene.camera.fov_x;
+        }
+        // für Render-Anweisung
+        else if (keyword == "render") {
+            std::string cam_name;
+            iss >> cam_name >> scene.output_filename >> scene.x_res >> scene.y_res;
+        }
+    }
+}
+
+     /*   std::string object_class;
+        iss>> object_class;
 
         if (object_class == "material") {
             auto material = std::make_shared<Material>();
@@ -47,8 +134,8 @@ void load_sdf(std::string const& filepath, Scene& scene)
             scene.materials_vector.push_back(material); ///Pushen für std::vector
             scene.materials_set.insert(material);       //Pushen für std::set
         }
-    }
-}
+    */
+
 
 //Aufgabe 7.6
 //Definition "<" operators (Es wurde in scene.hpp als Global deklariert)
