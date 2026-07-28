@@ -18,6 +18,10 @@ public:
 
     HitPoint intersect(Ray const& ray) const override;
 
+    // Getter
+    glm::vec3 const& center() const { return center_; }
+    float radius() const { return radius_; }
+
 private:
     glm::vec3 center_;
     float radius_;

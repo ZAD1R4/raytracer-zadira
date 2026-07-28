@@ -20,6 +20,10 @@ public:
 
     virtual std::ostream& print(std::ostream& os) const;
 
+    // Getter-Methoden (für Renderer & Parser)
+    std::string const& name() const { return name_; }
+    std::shared_ptr<Material> const& material() const { return material_; }
+
 protected:
     std::string name_;
     std::shared_ptr<Material> material_;
