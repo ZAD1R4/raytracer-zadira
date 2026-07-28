@@ -16,6 +16,10 @@ public:
 
     HitPoint intersect(Ray const& ray) const override;
 
+    // Getter
+    glm::vec3 const& min() const { return min_; }
+    glm::vec3 const& max() const { return max_; }
+
 private:
     glm::vec3 min_;
     glm::vec3 max_;

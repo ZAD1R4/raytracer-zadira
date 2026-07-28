@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <glm/common.hpp>
 #include <iostream>
+#include <glm/glm.hpp>
 
 Box::Box(glm::vec3 const& min, glm::vec3 const& max, std::shared_ptr<Material> const& material, std::string const& name)
     : Shape{name, material}
@@ -40,6 +41,8 @@ HitPoint Box::intersect(Ray const& ray) const
 {
     HitPoint result;
 
+    glm::vec3 ray_dir = glm::normalize(ray.direction);
+
     glm::vec3 inv_dir{1.0f / ray.direction.x, 1.0f / ray.direction.y, 1.0f / ray.direction.z};
 
     glm::vec3 t1 = (min_ - ray.origin) * inv_dir;
@@ -51,6 +54,7 @@ HitPoint Box::intersect(Ray const& ray) const
     float t_near = std::max({t_min_axes.x, t_min_axes.y, t_min_axes.z});
     float t_far = std::min({t_max_axes.x, t_max_axes.y, t_max_axes.z});
 
+    //wenn es kein Schnittpunkt hinter der kamera gibt
     if (t_near > t_far || t_far < 0.0f) {
         result.hit = false;
         return result;
@@ -64,6 +68,17 @@ HitPoint Box::intersect(Ray const& ray) const
     result.color = material_ ? material_->kd : Color{0.0f, 0.0f, 0.0f};
     result.intersection_point = ray.origin + distance * ray.direction;
     result.direction = ray.direction;
+
+    // Normalenvektor anhand der getroffenen Achse bestimmen
+    glm::vec3 normal{0.0f};
+    if (t_near == t_min_axes.x) {
+        normal = glm::vec3(-glm::sign(ray_dir.x), 0.0f, 0.0f);
+    } else if (t_near == t_min_axes.y) {
+        normal = glm::vec3(0.0f, -glm::sign(ray_dir.y), 0.0f);
+    } else if (t_near == t_min_axes.z) {
+        normal = glm::vec3(0.0f, 0.0f, -glm::sign(ray_dir.z));
+    }
+    result.normal = normal;
 
     return result;
 }
