@@ -1,0 +1,24 @@
+# --- Materialien ---
+# define material <name> <ka_r> <ka_g> <ka_b> <kd_r> <kd_g> <kd_b> <ks_r> <ks_g> <ks_b> <m>
+define material red   0.2 0.0 0.0   0.8 0.1 0.1   0.5 0.5 0.5   20.0
+define material blue  0.0 0.0 0.2   0.1 0.2 0.8   0.6 0.6 0.6   50.0
+define material grey  0.1 0.1 0.1   0.5 0.5 0.5   0.2 0.2 0.2   10.0
+
+# --- Objekte ---
+# define shape sphere <name> <center.x> <center.y> <center.z> <radius> <material>
+define shape sphere kugel1  -20.0 0.0 -100.0 25.0 red
+define shape sphere kugel2   25.0 10.0 -80.0  15.0 blue
+
+# define shape box <name> <min.x> <min.y> <min.z> <max.x> <max.y> <max.z> <material>
+define shape box boden -100.0 -60.0 -200.0 100.0 -25.0 -50.0 grey
+
+# --- Lichtquellen ---
+# define light <name> <pos.x> <pos.y> <pos.z> <color.r> <color.g> <color.b> <brightness>
+define light sonne 100.0 100.0 0.0 1.0 1.0 1.0 1.5
+
+# --- Ambientes Licht ---c
+ambient 0.2 0.2 0.2
+
+# --- Kamera & Render-Einstellungen ---
+camera main_cam 45.0
+render main_cam ausgabe.ppm 800 600

@@ -38,6 +38,7 @@ std::ostream& Sphere::print(std::ostream& os) const
 HitPoint Sphere::intersect(Ray const& ray) const
 {
     HitPoint result;
+    result.hit = true;
 
     // Sicherstellen, dass die Strahlrichtung normiert ist
     glm::vec3 ray_dir = glm::normalize(ray.direction);

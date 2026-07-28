@@ -48,9 +48,7 @@ void load_sdf(std::string const& filepath, Scene& scene)
 
                 // Für den Raytracer (Map)
                 scene.materials[material->name] = material;
-                // Für frühere Tests
-                scene.materials_vector.push_back(material);
-                scene.materials_set.insert(material);
+
             }
             // für Shapes (Sphere & Box)
             else if (object_class == "shape") {
@@ -96,6 +94,9 @@ void load_sdf(std::string const& filepath, Scene& scene)
                 if (iss) {
                     scene.lights.push_back(light);
                 }
+            }
+            else if (object_class == "camera") {
+                iss >> scene.camera.name >> scene.camera.fov_x;
             }
         }
         // für Ambientes Licht
