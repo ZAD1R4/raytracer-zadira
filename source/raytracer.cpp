@@ -1,23 +1,30 @@
-#include <renderer.hpp>
-#include <window.hpp>
+#include "renderer.hpp"
+#include "sdf_loader.hpp"
+#include "scene.hpp"
+#include "window.hpp"
 
 #include <GLFW/glfw3.h>
-#include <thread>
-#include <utility>
-#include <cmath>
+#include <iostream>
 
-//now single threaded again
 int main(int argc, char* argv[])
 {
-  unsigned const image_width = 800;
-  unsigned const image_height = 600;
-  std::string const filename = "./checkerboard.ppm";
+  std::string sdf_path = "szene.sdf";
+  if (argc > 1) {
+    sdf_path = argv[1];
+  }
 
-  Renderer renderer{image_width, image_height, filename};
+  // 1. Szene laden
+  Scene scene;
+  load_sdf(sdf_path, scene);
 
-  renderer.render();
+  // 2. Renderer initialisieren
+  Renderer renderer{scene.x_res, scene.y_res, scene.output_filename};
 
-  Window window{{image_width, image_height}};
+  // 3. Szene rendern
+  renderer.render(scene);
+
+  // 4. In ein Fenster ausgeben
+  Window window{{scene.x_res, scene.y_res}};
 
   while (!window.should_close()) {
     if (window.get_key(GLFW_KEY_ESCAPE) == GLFW_PRESS) {

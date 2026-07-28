@@ -15,13 +15,19 @@
 #include "ppmwriter.hpp"
 #include <string>
 #include <glm/glm.hpp>
+#include "scene.hpp"
+#include "ray.hpp"
+#include "hitpoint.hpp"
+
+#include <string>
+#include <vector>
 
 class Renderer
 {
 public:
   Renderer(unsigned w, unsigned h, std::string const& file);
 
-  void render();
+  void render(Scene const& scene);
   void write(Pixel const& p);
 
   inline std::vector<Color> const& color_buffer() const
@@ -30,6 +36,9 @@ public:
   }
 
 private:
+  HitPoint trace_ray(Scene const& scene, Ray const& ray) const;
+  Color shade(Scene const& scene, HitPoint const& hit, Ray const& ray) const;
+
   unsigned width_;
   unsigned height_;
   std::vector<Color> color_buffer_;

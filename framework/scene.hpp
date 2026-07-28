@@ -47,8 +47,8 @@ struct Scene
     // Kamera und Rendering-Parameter
     Camera camera;
     std::string output_filename = "image.ppm";
-    int x_res = 480;
-    int y_res = 320;
+    unsigned x_res = 480;
+    unsigned y_res = 320;
 };
 
 // Die Deklarationen deiner drei Suchfunktionen
