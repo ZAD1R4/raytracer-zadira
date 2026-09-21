@@ -6,6 +6,8 @@ std::ostream& operator<<(std::ostream& os, Material const& mat)
        << ", ka = " << mat.ka
        << ", kd = " << mat.kd
        << ", ks = " << mat.ks
-       << ", m = " << mat.m;
+       << ", m = " << mat.m
+       << ", n = " << mat.refraction_index
+       << ", opacity = " << mat.opacity;
     return os;
 }

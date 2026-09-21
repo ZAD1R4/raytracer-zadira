@@ -37,7 +37,11 @@ public:
 
 private:
   HitPoint trace_ray(Scene const& scene, Ray const& ray) const;
-  Color shade(Scene const& scene, HitPoint const& hit, Ray const& ray) const;
+  Color shade(Scene const& scene, HitPoint const& hit, Ray const& ray, int depth) const;
+
+  // Aufgabe 7.2: maximale Anzahl an Spiegelungen (Rekursionstiefe),
+  // bevor die Rekursion abgebrochen wird.
+  static constexpr int MAX_REFLECTION_DEPTH = 5;
 
   unsigned width_;
   unsigned height_;

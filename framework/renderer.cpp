@@ -36,7 +36,7 @@ HitPoint Renderer::trace_ray(Scene const& scene, Ray const& ray) const
   return closest_hit;
 }
 
-Color Renderer::shade(Scene const& scene, HitPoint const& hit, Ray const& ray) const
+Color Renderer::shade(Scene const& scene, HitPoint const& hit, Ray const& ray, int depth) const
 {
   if (!hit.hit || !hit.material) {
     return Color{0.0f, 0.0f, 0.0f}; // Hintergrundfarben (Schwarz)
@@ -79,13 +79,53 @@ Color Renderer::shade(Scene const& scene, HitPoint const& hit, Ray const& ray) c
     color_hdr = color_hdr + diffuse + specular;
   }
 
-  //  Tone Mapping: c_ldr = c_hdr / (c_hdr + 1)
-  Color color_ldr;
-  color_ldr.r = color_hdr.r / (color_hdr.r + 1.0f);
-  color_ldr.g = color_hdr.g / (color_hdr.g + 1.0f);
-  color_ldr.b = color_hdr.b / (color_hdr.b + 1.0f);
+  // Aufgabe 7.2
+  if (depth > 0) {
+    float reflectivity = (mat->ks.r + mat->ks.g + mat->ks.b) / 3.0f;
 
-  return color_ldr;
+    if (reflectivity > 0.0f) {
+      glm::vec3 incoming_dir = glm::normalize(ray.direction);
+      glm::vec3 reflect_dir = glm::reflect(incoming_dir, N);
+
+      Ray reflected_ray{hit.intersection_point + N * 0.001f, reflect_dir};
+
+      HitPoint reflected_hit = trace_ray(scene, reflected_ray);
+      Color reflected_color = shade(scene, reflected_hit, reflected_ray, depth - 1);
+
+      color_hdr = color_hdr + reflectivity * reflected_color;
+    }
+  }
+
+  // Aufgabe 7.3
+  if (depth > 0 && mat->opacity < 1.0f) {
+    glm::vec3 I = glm::normalize(ray.direction);
+
+    glm::vec3 N_local = N;
+    float eta = 1.0f / mat->refraction_index; // n_aussen / n_innen, n_Luft = 1.0
+
+    if (glm::dot(N, I) > 0.0f) {
+      N_local = -N;
+      eta = mat->refraction_index; // n_innen / n_aussen
+    }
+
+    glm::vec3 refract_dir = glm::refract(I, N_local, eta);
+    Color transmitted_color{0.0f, 0.0f, 0.0f};
+
+    if (glm::length(refract_dir) > 0.0f) {
+      Ray refracted_ray{hit.intersection_point - N_local * 0.001f, refract_dir};
+      HitPoint refracted_hit = trace_ray(scene, refracted_ray);
+      transmitted_color = shade(scene, refracted_hit, refracted_ray, depth - 1);
+    } else {
+      glm::vec3 reflect_dir = glm::reflect(I, N_local);
+      Ray reflected_ray{hit.intersection_point + N_local * 0.001f, reflect_dir};
+      HitPoint reflected_hit = trace_ray(scene, reflected_ray);
+      transmitted_color = shade(scene, reflected_hit, reflected_ray, depth - 1);
+    }
+
+    color_hdr = mat->opacity * color_hdr + (1.0f - mat->opacity) * transmitted_color;
+  }
+
+  return color_hdr;
 }
 
 void Renderer::render(Scene const& scene)
@@ -97,7 +137,6 @@ void Renderer::render(Scene const& scene)
     for (unsigned x = 0; x < width_; ++x) {
       Pixel p(x, y);
 
-      // Strahlberechnung vom Ursprung aus
       glm::vec3 dir{
         float(x) - float(width_) / 2.0f + 0.5f,
         float(y) - float(height_) / 2.0f + 0.5f,
@@ -107,7 +146,13 @@ void Renderer::render(Scene const& scene)
       Ray ray{{0.0f, 0.0f, 0.0f}, glm::normalize(dir)};
 
       HitPoint hit = trace_ray(scene, ray);
-      p.color = shade(scene, hit, ray);
+      Color color_hdr = shade(scene, hit, ray, MAX_REFLECTION_DEPTH);
+      Color color_ldr;
+      color_ldr.r = color_hdr.r / (color_hdr.r + 1.0f);
+      color_ldr.g = color_hdr.g / (color_hdr.g + 1.0f);
+      color_ldr.b = color_hdr.b / (color_hdr.b + 1.0f);
+
+      p.color = color_ldr;
 
       write(p);
     }

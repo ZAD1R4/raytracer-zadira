@@ -65,6 +65,7 @@ HitPoint Box::intersect(Ray const& ray) const
     result.hit = true;
     result.distance = distance;
     result.name = name_;
+    result.material = material_;
     result.color = material_ ? material_->kd : Color{0.0f, 0.0f, 0.0f};
     result.intersection_point = ray.origin + distance * ray.direction;
     result.direction = ray.direction;

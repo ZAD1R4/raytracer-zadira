@@ -46,6 +46,17 @@ void load_sdf(std::string const& filepath, Scene& scene)
                     continue;
                 }
 
+                // Aufgabe 7.3
+                float refraction_index = 0.0f;
+                float opacity = 0.0f;
+                if (iss >> refraction_index) {
+                    material->refraction_index = refraction_index;
+
+                    if (iss >> opacity) {
+                        material->opacity = opacity;
+                    }
+                }
+
                 // Für den Raytracer (Map)
                 scene.materials[material->name] = material;
 
